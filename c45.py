@@ -47,8 +47,7 @@ class C45:
         impurityBeforeSplit = self.entropy(unionSet)
         weights = [len(subset)/S for subset in subsets]
         impurityAfterSplit = 0
-        for i in range(len(subsets)):
-            impurityAfterSplit += weights[i]*self.entropy(subsets[i])
+            impurityAfterSplit += weights[i]*self.entropy(subsets)
 
         totalGain = impurityBeforeSplit - impurityAfterSplit
         
@@ -59,19 +58,18 @@ class C45:
         maxEntropy = -1 * float("inf")
         best_attribute = -1
         for attribute in curAttributes:
-            subsets = [[[] for a in self.attrValues]]
+            subsets = [[] for a in self.attrValues]
             for row in curData:
                 for i in range(len(self.attrValues)):
                     if row[attribute] == self.attrValues[i]:
                         subsets[i].append(row)
                         break
 
-            for subset in subsets:
-                ent = self.gain(curData, subset)
-                if ent > maxEntropy:
-                    maxEntropy = ent
-                    splitted = subset
-                    best_attribute = attribute
+            ent = self.gain(curData, subset)
+            if ent > maxEntropy:
+                maxEntropy = ent
+                splitted = subset
+                best_attribute = attribute
 
 
         return (best_attribute,splitted)
