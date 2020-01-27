@@ -1,45 +1,35 @@
 import math
 from Node import Node
+from Data import Data
 
 class C45:
-    def __init__(self, path_to_data):
-        self.path_to_data = path_to_data
-        self.data = []
+    def __init__(self, data):
+        self.data, self.test = data.split_to_train_test()
         self.classes = [0, 1]
-        self.numAttributes = -1
+        self.numAttributes = len(self.data[0])-1
         self.attrValues = ['C', 'T', 'G', 'A']
-        self.attributes = []
-
-    def fetchData(self):
-        with open(self.path_to_data, 'r') as file:
-            data = file.read().splitlines()
-            self.numAttributes = len(data[2])
-            self.attributes = list(range(self.numAttributes))
-            for i in range(len(data)):
-                if data[i] == '1':
-                    self.data.append(f'{data[i+1]}1')
-                elif data[i] == '0':
-                    self.data.append(f'{data[i+1]}0')
+        self.attributes = list(range(self.numAttributes))
+        self.tree = None
 
     def generateTree(self):
         self.tree = self.recursiveGenerateTree(self.data, self.attributes)
 
-    def recursiveGenerateTree(self, curData, curAttributes):
+    def recursiveGenerateTree(self, curData, curAttributes, attrValue=""):
         if len(curData) == 0:
-            return Node(True, "Fail")
+            return Node(True, "Fail", attrValue)
 
         oneClass = C45.sameClass(curData)
         if oneClass is not False:
-            return Node(True, oneClass)
+            return Node(True, oneClass, attrValue)
         elif len(curAttributes) == 0:
             majority = self.getHighestFreqClass(curData)
-            return Node(True, majority)
+            return Node(True, majority, attrValue)
         else:
             (best,splitted) = self.splitAttribute(curData, curAttributes)
             remainingAttributes = curAttributes[:]
             remainingAttributes.remove(best)
-            node = Node(False, best)
-            node.children = [self.recursiveGenerateTree(subset, remainingAttributes) for subset in splitted]
+            node = Node(False, best, attrValue)
+            node.children = [self.recursiveGenerateTree(splitted[i], remainingAttributes, i) for i in range(len(splitted))]
             return node
 
     def gain(self, unionSet, subsets):
@@ -47,7 +37,8 @@ class C45:
         impurityBeforeSplit = self.entropy(unionSet)
         weights = [len(subset)/S for subset in subsets]
         impurityAfterSplit = 0
-            impurityAfterSplit += weights[i]*self.entropy(subsets)
+        for i in range(len(weights)):
+            impurityAfterSplit += weights[i]*self.entropy(subsets[i])
 
         totalGain = impurityBeforeSplit - impurityAfterSplit
         
@@ -65,10 +56,10 @@ class C45:
                         subsets[i].append(row)
                         break
 
-            ent = self.gain(curData, subset)
+            ent = self.gain(curData, subsets)
             if ent > maxEntropy:
                 maxEntropy = ent
-                splitted = subset
+                splitted = subsets
                 best_attribute = attribute
 
 
@@ -95,7 +86,7 @@ class C45:
     def getHighestFreqClass(self, curData):
         freq = [0]*len(self.classes)
         for row in curData:
-            index = self.classes.index(row[-1])
+            index = self.classes.index(int(row[-1]))
             freq[index] += 1
             
         maxInd = freq.index(max(freq))
@@ -107,11 +98,11 @@ class C45:
     def printNode(self, node, indent=""):
         if not node.isLeaf:
 			#discrete
-            for index,child in enumerate(node.children):
+            for child in enumerate(node.children):
                 if child.isLeaf:
-                    print(indent + str(node.label) + " = " + str(self.attributes[index]) + " : " + str(child.label))
+                    print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : " + str(child.attribute))
                 else:
-                    print(indent + str(node.label) + " = " + str(self.attributes[index]) + " : ")
+                    print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : ")
                     self.printNode(child, indent + "	")
 
     @staticmethod
@@ -132,3 +123,7 @@ class C45:
 
 
         return data[0][-1]
+
+    def evaluate(self):
+        e = 0
+         
