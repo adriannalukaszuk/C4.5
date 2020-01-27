@@ -98,7 +98,7 @@ class C45:
     def printNode(self, node, indent=""):
         if not node.isLeaf:
 			#discrete
-            for child in enumerate(node.children):
+            for child in node.children:
                 if child.isLeaf:
                     print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : " + str(child.attribute))
                 else:
@@ -126,4 +126,19 @@ class C45:
 
     def evaluate(self):
         e = 0
+        for data in self.test:
+            curNode = self.tree
+            while not curNode.isLeaf:
+                for child in curNode.children:
+                    if data[curNode.attribute] == self.attrValues[child.attributeValue]:
+                        curNode = child
+                        break
+                    
+                    curNode = child
+                    break
+            if data[-1] != curNode.attribute:
+                e += 1
+        error = e/len(self.test)
+        print(error)
+            
          

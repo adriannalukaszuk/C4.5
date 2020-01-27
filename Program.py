@@ -7,3 +7,4 @@ if __name__ == "__main__":
     c1 = C45(d1)
     c1.generateTree()
     c1.printTree()
+    c1.evaluate()
