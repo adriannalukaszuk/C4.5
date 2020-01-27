@@ -1,11 +1,11 @@
 import math
-from node import Node
+from Node import Node
 
 class C45:
     def __init__(self, path_to_data):
         self.path_to_data = path_to_data
         self.data = []
-        self.classes = ['0', '1']
+        self.classes = [0, 1]
         self.numAttributes = -1
         self.attrValues = ['C', 'T', 'G', 'A']
         self.attributes = []
@@ -59,37 +59,37 @@ class C45:
         maxEntropy = -1 * float("inf")
         best_attribute = -1
         for attribute in curAttributes:
-            valuesForAttribute = self.data[:][attribute]
-            subsets = [[] for a in valuesForAttribute]
+            subsets = [[[] for a in self.attrValues]]
             for row in curData:
-                for i in range(len(valuesForAttribute)):
-                    if row[i] == valuesForAttribute[i]:
+                for i in range(len(self.attrValues)):
+                    if row[attribute] == self.attrValues[i]:
                         subsets[i].append(row)
                         break
-                    
-            ent = self.gain(curData, subsets)
-            if ent > maxEntropy:
-                maxEntropy = ent
-                splitted = subsets
-                best_attribute = attribute
+
+            for subset in subsets:
+                ent = self.gain(curData, subset)
+                if ent > maxEntropy:
+                    maxEntropy = ent
+                    splitted = subset
+                    best_attribute = attribute
 
 
         return (best_attribute,splitted)
 
+    #zalozenie: dataSet ma zbior elementow z takim samym argumentem warunkowym tj. np. P(decision| argument4 = 'G')
     def entropy(self, dataSet):
         size = len(dataSet)
         if size == 0:
             return 0
-                
-        prob_counter = [0 for i in self.classes]
+        
+        classes = [0 for i in self.classes]
         for row in dataSet:
-            classIndex = list(self.classes).index(row[-1])
-            prob_counter[classIndex] += 1
+            classIndex = list(self.classes).index(int(row[-1]))
+            classes[classIndex] += 1
 
-        prob_counter = (int(x)/size for x in self.classes)
-       
+        classes = (int(x)/size for x in self.classes)
         sum = 0
-        for data in prob_counter:
+        for data in classes:
             sum += data * C45.log(data)
 
         return sum*-1
