@@ -1,5 +1,5 @@
 import math
-import itertools
+import random
 from Node import Node
 from Data import Data
 
@@ -8,24 +8,16 @@ class C45:
         self.data, self.test = data.split_to_train_test()
         self.classes = [0, 1]
         self.numAttributes = len(self.data[0])-1
-        self.attrValues = ['C', 'T', 'G', 'A', 'N', 'S']
+        self.attrValues = data.attrValues
         self.attributes = list(range(self.numAttributes))
         self.tree = None
 
     def generateTree(self):
         self.tree = self.recursiveGenerateTree(self.data, self.attributes)
 
-
-    def generateAttributes(self, attrPoll, positions):
-        attrValues = []
-        for i in itertools.product(*([attrPoll] * positions)) :
-            attrValues.append(i)
-
-        return attrValues
-
     def recursiveGenerateTree(self, curData, curAttributes, attrValue=[]):
         if len(curData) == 0:
-            return Node(True, 0, attrValue)
+            return Node(True, random.choice([0,1]), attrValue)
 
         oneClass = C45.sameClass(curData)
         if oneClass is not False:
