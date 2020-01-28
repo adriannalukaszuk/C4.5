@@ -1,4 +1,5 @@
 import math
+import itertools
 from Node import Node
 from Data import Data
 
@@ -7,16 +8,24 @@ class C45:
         self.data, self.test = data.split_to_train_test()
         self.classes = [0, 1]
         self.numAttributes = len(self.data[0])-1
-        self.attrValues = ['C', 'T', 'G', 'A']
+        self.attrValues = ['C', 'T', 'G', 'A', 'N', 'S']
         self.attributes = list(range(self.numAttributes))
         self.tree = None
 
     def generateTree(self):
         self.tree = self.recursiveGenerateTree(self.data, self.attributes)
 
-    def recursiveGenerateTree(self, curData, curAttributes, attrValue=""):
+
+    def generateAttributes(self, attrPoll, positions):
+        attrValues = []
+        for i in itertools.product(*([attrPoll] * positions)) :
+            attrValues.append(i)
+
+        return attrValues
+
+    def recursiveGenerateTree(self, curData, curAttributes, attrValue=[]):
         if len(curData) == 0:
-            return Node(True, "Fail", attrValue)
+            return Node(True, 0, attrValue)
 
         oneClass = C45.sameClass(curData)
         if oneClass is not False:
@@ -29,7 +38,26 @@ class C45:
             remainingAttributes = curAttributes[:]
             remainingAttributes.remove(best)
             node = Node(False, best, attrValue)
-            node.children = [self.recursiveGenerateTree(splitted[i], remainingAttributes, i) for i in range(len(splitted))]
+            kids = []
+            notClassified = []
+            index = 0
+            max = 0
+            for i in range(len(splitted)):
+                if len(splitted[i]) != 0:
+                    if(len(splitted[i]) > max):
+                        max = len(splitted[i])
+                        index = len(kids)
+
+                    kids.append(self.recursiveGenerateTree(splitted[i], remainingAttributes, i))
+                else:
+                    notClassified.append(i)
+
+            if len(notClassified) != 0:
+                for attrValue in notClassified:
+                    kids[index].attributeValue.append(attrValue)
+
+            node.children = kids
+            
             return node
 
     def gain(self, unionSet, subsets):
@@ -126,17 +154,24 @@ class C45:
 
     def evaluate(self):
         e = 0
+        precent = 0
+        dataLen = len(self.test)
         for data in self.test:
             curNode = self.tree
             while not curNode.isLeaf:
                 for child in curNode.children:
-                    if data[curNode.attribute] == self.attrValues[child.attributeValue]:
-                        curNode = child
-                        break
+                    for attrValue in child.attributeValue:
+                        if data[curNode.attribute] in self.attrValues[attrValue]:
+                            curNode = child
+                            break
                     
-                    curNode = child
-                    break
-            if data[-1] != curNode.attribute:
+                    if curNode == child:
+                        break
+
+            precent += 1
+            print(f'{precent*100/dataLen}%')
+
+            if data[-1] != str(curNode.attribute):
                 e += 1
         error = e/len(self.test)
         print(error)
