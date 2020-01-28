@@ -16,9 +16,6 @@ class C45:
         self.tree = self.recursiveGenerateTree(self.data, self.attributes)
 
     def recursiveGenerateTree(self, curData, curAttributes, attrValue=[]):
-        if len(curData) == 0:
-            return Node(True, random.choice([0,1]), attrValue)
-
         oneClass = C45.sameClass(curData)
         if oneClass is not False:
             return Node(True, oneClass, attrValue)
