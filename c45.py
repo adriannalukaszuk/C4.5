@@ -1,4 +1,5 @@
 import math
+import random
 from Node import Node
 from Data import Data
 
@@ -7,7 +8,7 @@ class C45:
         self.data, self.test = data.split_to_train_test()
         self.classes = [0, 1]
         self.numAttributes = len(self.data[0])-1
-        self.attrValues = ['C', 'T', 'G', 'A']
+        self.attrValues = data.attrValues
         self.attributes = list(range(self.numAttributes))
         self.tree = None
 
@@ -16,7 +17,7 @@ class C45:
 
     def recursiveGenerateTree(self, curData, curAttributes, attrValue=""):
         if len(curData) == 0:
-            return Node(True, "Fail", attrValue)
+            return Node(True, random.choice([0,1]), attrValue)
 
         oneClass = C45.sameClass(curData)
         if oneClass is not False:
@@ -133,10 +134,7 @@ class C45:
                     if data[curNode.attribute] == self.attrValues[child.attributeValue]:
                         curNode = child
                         break
-                    
-                    curNode = child
-                    break
-            if data[-1] != curNode.attribute:
+            if data[-1] != str(curNode.attribute):
                 e += 1
         error = e/len(self.test)
         print(error)
