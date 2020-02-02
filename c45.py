@@ -5,7 +5,7 @@ from Data import Data
 
 class C45:
     def __init__(self, data):
-        self.data, self.test = data.split_to_train_test()
+        self.data = data.data
         self.classes = [0, 1]
         self.numAttributes = len(self.data[0])-1
         self.attrValues = data.attrValues

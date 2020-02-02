@@ -20,9 +20,4 @@ class Data:
                     if data[i] not in self.attrValues:
                         self.attrValues.append(data[i])
 
-    def split_to_train_test(self):
-        self.fetchData()
-        train, test = train_test_split(self.data, test_size=0.33)
-        return train, test
-
     
