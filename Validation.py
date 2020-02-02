@@ -17,4 +17,3 @@ class Validation:
             if i != t:
                 train += data[i]
         train1, train2 = train[0:int(len(train)/2)], train[int(len(train)/2):]
-        
