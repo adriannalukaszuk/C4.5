@@ -34,7 +34,6 @@ class C45:
         commonClass, commonClassError = self.evaluateCommonClass(data)
         subTreeError = self.evaluateSubTree(data, node)
         if subTreeError >= commonClassError:
-            #print(f'commonClassError: {commonClassError}, subTreeError: {subTreeError}')
             node.isLeaf = True
             node.attribute = commonClass
             node.children = []
@@ -94,7 +93,7 @@ class C45:
                 e += 1
 
         error = e/dataLen
-        print(f'C45: {error}')
+        print(f'C45: {round(error * 100, 2)}%')
 
         return error
 
@@ -103,7 +102,6 @@ class C45:
         
     def printNode(self, node, indent=""):
         if not node.isLeaf:
-			#discrete
             for child in node.children:
                 if child.isLeaf:
                     print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : " + str(child.attribute))

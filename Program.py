@@ -5,7 +5,7 @@ if __name__ == "__main__":
     d1 = Data('spliceATrainKIS.dat')
     d2 = Data('spliceDTrainKIS.dat')
 
-    k = 10
+    k = 5
     print('------------------------------------')
     print('---------spliceATrainKIS------------')
     print('------------------------------------')

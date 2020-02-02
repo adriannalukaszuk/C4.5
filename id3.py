@@ -135,7 +135,7 @@ class ID3:
                 e += 1
 
         error = e/dataLen
-        print(f'ID3: {error}')
+        print(f'ID3: {round(error * 100, 2)}%')
 
         return error
 
