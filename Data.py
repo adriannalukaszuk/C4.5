@@ -1,4 +1,7 @@
-from sklearn.model_selection import train_test_split
+"""
+@file Data.py
+@author Marcin Kretkowski, Adrianna Łukaszuk
+"""
 
 class Data:
     def __init__(self, path_to_data):

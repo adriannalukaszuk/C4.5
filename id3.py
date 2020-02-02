@@ -1,5 +1,8 @@
+"""
+@file id3.py
+@author Marcin Kretkowski, Adrianna Łukaszuk
+"""
 import math
-import random
 from Node import Node
 from Data import Data
 
