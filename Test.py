@@ -1,3 +1,8 @@
+"""
+@file Test.py
+@author Marcin Kretkowski, Adrianna Łukaszuk
+"""
+
 from id3 import ID3
 from c45 import C45
 from Data import Data

@@ -1,3 +1,8 @@
+"""
+@file Program.py
+@author Marcin Kretkowski, Adrianna Łukaszuk
+"""
+
 from Data import Data
 from Test import Test
 

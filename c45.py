@@ -1,3 +1,8 @@
+"""
+@file c45.py
+@author Marcin Kretkowski, Adrianna Łukaszuk
+"""
+
 from Node import Node
 from Data import Data
 

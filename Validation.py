@@ -1,3 +1,8 @@
+"""
+@file Validation.py
+@author Marcin Kretkowski, Adrianna Łukaszuk
+"""
+
 import random
 
 class Validation:
