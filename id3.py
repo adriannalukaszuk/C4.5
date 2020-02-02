@@ -12,11 +12,11 @@ class ID3:
         self.tree = None
 
     def generateTree(self):
-        self.tree = self.recursiveGenerateTree(self.data, self.attributes)
+        self.tree = self.recursiveGenerateTree(self.data, self.attributes, '')
 
         return self.tree
 
-    def recursiveGenerateTree(self, curData, curAttributes, attrValue=""):
+    def recursiveGenerateTree(self, curData, curAttributes, attrValue):
         if len(curData) == 0:
             return Node(True, "Fail", attrValue)
 
@@ -31,7 +31,7 @@ class ID3:
             remainingAttributes = curAttributes[:]
             remainingAttributes.remove(best)
             node = Node(False, best, attrValue)
-            node.children = [self.recursiveGenerateTree(splitted[i], remainingAttributes, i) for i in range(len(splitted))]
+            node.children = [self.recursiveGenerateTree(splitted[i], remainingAttributes, self.attrValues[i]) for i in range(len(splitted))]
             return node
 
     def gain(self, unionSet, subsets):
@@ -117,7 +117,8 @@ class ID3:
         for row in data:
             if row[-1] != data[0][-1]:
                 return False
-        return data[0][-1]
+
+        return int(data[0][-1])
 
     def evaluate(self, testData):
         e = 0
@@ -126,7 +127,7 @@ class ID3:
             curNode = self.tree
             while not curNode.isLeaf:
                 for child in curNode.children:
-                    if data[curNode.attribute] == self.attrValues[child.attributeValue]:
+                    if data[curNode.attribute] == child.attributeValue:
                         curNode = child
                         break
 

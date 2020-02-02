@@ -1,7 +1,4 @@
-from ID3 import ID3
-from C45 import C45
 from Data import Data
-from Validation import Validation
 from Test import Test
 
 if __name__ == "__main__":

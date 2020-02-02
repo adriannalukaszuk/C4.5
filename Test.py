@@ -1,5 +1,5 @@
-from ID3 import ID3
-from C45 import C45
+from id3 import ID3
+from c45 import C45
 from Data import Data
 from Validation import Validation
 

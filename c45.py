@@ -23,7 +23,8 @@ class C45:
                 subData = self.getDataOnCondition(data, subTree.attribute, subTree.children[i].attributeValue)
                 evaluation = self.evaluate(subData, subTree.children[i])
                 if evaluation is not False:
-                    return evaluation
+                    subTree.children[i] = evaluation
+                    break
 
                 subTree.children[i] = self.depthAdjustment(subTree.children[i], subData)
                 
@@ -48,7 +49,7 @@ class C45:
             curNode = node
             while not curNode.isLeaf:
                 for child in curNode.children:
-                    if row[curNode.attribute] == self.attrValues[child.attributeValue]:
+                    if row[curNode.attribute] == child.attributeValue:
                         curNode = child
                         break
 
@@ -73,7 +74,7 @@ class C45:
         output = []
         i = 0
         for i in range(len(data)):
-            if data[i][attribute] == self.attrValues[attributeValue]:
+            if data[i][attribute] == attributeValue:
                 output.append(data[i])
 
         return output
@@ -85,7 +86,7 @@ class C45:
             curNode = self.tree
             while not curNode.isLeaf:
                 for child in curNode.children:
-                    if data[curNode.attribute] == self.attrValues[child.attributeValue]:
+                    if data[curNode.attribute] == child.attributeValue:
                         curNode = child
                         break
 
@@ -96,3 +97,16 @@ class C45:
         print(f'C45: {error}')
 
         return error
+
+    def printTree(self):
+        self.printNode(self.tree)
+        
+    def printNode(self, node, indent=""):
+        if not node.isLeaf:
+			#discrete
+            for child in node.children:
+                if child.isLeaf:
+                    print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : " + str(child.attribute))
+                else:
+                    print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : ")
+                    self.printNode(child, indent + "	")
