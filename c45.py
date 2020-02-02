@@ -1,168 +1,93 @@
-import math
-import random
 from Node import Node
 from Data import Data
 
 class C45:
     def __init__(self, data):
-        self.data, self.test = data.split_to_train_test()
+        self.test, self.data = data.split_to_train_test()
         self.classes = [0, 1]
         self.numAttributes = len(self.data[0])-1
         self.attrValues = data.attrValues
-        self.attributes = list(range(self.numAttributes))
-        self.tree = None
 
-    def generateTree(self):
-        self.tree = self.recursiveGenerateTree(self.data, self.attributes)
+    def adjustWithC45(self, tree):
+        self.tree = self.depthAdjustment(tree, self.data)
 
-    def recursiveGenerateTree(self, curData, curAttributes, attrValue=[]):
-        oneClass = C45.sameClass(curData)
-        if oneClass is not False:
-            return Node(True, oneClass, attrValue)
-        elif len(curAttributes) == 0:
-            majority = self.getHighestFreqClass(curData)
-            return Node(True, majority, attrValue)
-        else:
-            (best,splitted) = self.splitAttribute(curData, curAttributes)
-            remainingAttributes = curAttributes[:]
-            remainingAttributes.remove(best)
-            node = Node(False, best, attrValue)
-            kids = []
-            notClassified = []
-            index = 0
-            max = 0
-            for i in range(len(splitted)):
-                if len(splitted[i]) != 0:
-                    if(len(splitted[i]) > max):
-                        max = len(splitted[i])
-                        index = len(kids)
+    def depthAdjustment(self, subTree, data):
+        for i in range(len(subTree.children)):
+            if subTree.children[i].isLeaf == True:
+                break
+            else:
+                subData = self.getDataOnCondition(data, subTree.attribute, subTree.children[i].attributeValue)
+                evaluation = self.evaluate(subData, subTree.children[i])
+                if evaluation is not False:
+                    return evaluation
 
-                    kids.append(self.recursiveGenerateTree(splitted[i], remainingAttributes, i))
-                else:
-                    notClassified.append(i)
+                subTree.children[i] = self.depthAdjustment(subTree.children[i], subData)
+                
+        return subTree
 
-            if len(notClassified) != 0:
-                for attrValue in notClassified:
-                    kids[index].attributeValue.append(attrValue)
+    def evaluate(self, data, node):
+        commonClass, commonClassError = self.evaluateCommonClass(data)
+        subTreeError = self.evaluateSubTree(data, node)
+        if commonClassError >= subTreeError:
+            node.isLeaf = True
+            node.attribute = commonClass
 
-            node.children = kids
-            
             return node
 
-    def gain(self, unionSet, subsets):
-        S = len(unionSet)
-        impurityBeforeSplit = self.entropy(unionSet)
-        weights = [len(subset)/S for subset in subsets]
-        impurityAfterSplit = 0
-        for i in range(len(weights)):
-            impurityAfterSplit += weights[i]*self.entropy(subsets[i])
+        return False
 
-        totalGain = impurityBeforeSplit - impurityAfterSplit
-        
-        return totalGain
-        
-    def splitAttribute(self, curData, curAttributes):
-        splitted = []
-        maxEntropy = -1 * float("inf")
-        best_attribute = -1
-        for attribute in curAttributes:
-            subsets = [[] for a in self.attrValues]
-            for row in curData:
-                for i in range(len(self.attrValues)):
-                    if row[attribute] == self.attrValues[i]:
-                        subsets[i].append(row)
+    def evaluateSubTree(self, data, node):
+        error = 0
+        for row in data:
+            curNode = node
+            while not curNode.isLeaf:
+                for child in curNode.children:
+                    if row[curNode.attribute] == self.attrValues[child.attributeValue]:
+                        curNode = child
                         break
 
-            ent = self.gain(curData, subsets)
-            if ent > maxEntropy:
-                maxEntropy = ent
-                splitted = subsets
-                best_attribute = attribute
+            if row[-1] != str(curNode.attribute):
+                error += 1
 
+        return error
 
-        return (best_attribute,splitted)
-
-    #zalozenie: dataSet ma zbior elementow z takim samym argumentem warunkowym tj. np. P(decision| argument4 = 'G')
-    def entropy(self, dataSet):
-        size = len(dataSet)
-        if size == 0:
-            return 0
-        
+    def evaluateCommonClass(self, data):
         classes = [0 for i in self.classes]
-        for row in dataSet:
+        for row in data:
             classIndex = list(self.classes).index(int(row[-1]))
             classes[classIndex] += 1
 
-        classes = (int(x)/size for x in self.classes)
-        sum = 0
-        for data in classes:
-            sum += data * C45.log(data)
+        classFreq = max(classes)
+        error = sum(classes) - classFreq
+        commonClass = list(self.classes).index(classFreq)
 
-        return sum*-1
+        return commonClass, error
 
-    def getHighestFreqClass(self, curData):
-        freq = [0]*len(self.classes)
-        for row in curData:
-            index = self.classes.index(int(row[-1]))
-            freq[index] += 1
-            
-        maxInd = freq.index(max(freq))
-        return self.classes[maxInd]
+    def getDataOnCondition(self, data, attribute, attributeValue):
+        output = []
+        i = 0
+        for i in range(len(data)):
+            if data[i][attribute] == self.attrValues[attributeValue]:
+                output.append(data[i])
 
-    def printTree(self):
-        self.printNode(self.tree)
+        return output
 
-    def printNode(self, node, indent=""):
-        if not node.isLeaf:
-			#discrete
-            for child in node.children:
-                if child.isLeaf:
-                    print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : " + str(child.attribute))
-                else:
-                    print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : ")
-                    self.printNode(child, indent + "	")
-
-    @staticmethod
-    def log(value):
-        if(value == 0):
-            return 0
-        
-        return math.log(value, 2)
-
-    @staticmethod
-    def sameClass(data):
-        if len(data) == 0:
-            return False
-
-        for row in data:
-            if row[-1] != data[0][-1]:
-                return False
-
-
-        return data[0][-1]
-
-    def evaluate(self):
+    def evaluateC45Tree(self):
         e = 0
-        precent = 0
-        dataLen = len(self.test)
-        for data in self.test:
+        percent = 0
+        dataLen = len(self.data)
+        for data in self.data:
             curNode = self.tree
             while not curNode.isLeaf:
                 for child in curNode.children:
-                    for attrValue in child.attributeValue:
-                        if data[curNode.attribute] in self.attrValues[attrValue]:
-                            curNode = child
-                            break
-                    
-                    if curNode == child:
+                    if data[curNode.attribute] == self.attrValues[child.attributeValue]:
+                        curNode = child
                         break
 
-            precent += 1
-            print(f'{precent*100/dataLen}%')
-
+            percent += 1
+            #print(f'{percent*100/dataLen}%')
             if data[-1] != str(curNode.attribute):
                 e += 1
-        error = e/len(self.test)
+
+        error = e/dataLen
         print(error)
-            
-         
