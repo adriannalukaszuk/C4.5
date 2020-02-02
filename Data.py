@@ -5,6 +5,7 @@ class Data:
         self.path_to_data = path_to_data
         self.data = []
         self.attrValues = []
+        self.classes = [0, 1]
 
     def fetchData(self):
         with open(self.path_to_data, 'r') as file:
@@ -19,5 +20,4 @@ class Data:
                 for i in range(len(data)-1):
                     if data[i] not in self.attrValues:
                         self.attrValues.append(data[i])
-
     

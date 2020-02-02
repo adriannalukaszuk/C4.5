@@ -2,19 +2,23 @@ from Node import Node
 from Data import Data
 
 class C45:
-    def __init__(self, data):
-        self.test, self.data = data.split_to_train_test()
-        self.classes = [0, 1]
-        self.numAttributes = len(self.data[0])-1
-        self.attrValues = data.attrValues
+    def __init__(self, data, attrValues, classes):
+        self.data = data
+        self.classes = classes
+        self.attrValues = attrValues
 
     def adjustWithC45(self, tree):
         self.tree = self.depthAdjustment(tree, self.data)
 
     def depthAdjustment(self, subTree, data):
+        if len(data) == 0:
+            return subTree
+
         for i in range(len(subTree.children)):
             if subTree.children[i].isLeaf == True:
-                break
+                if subTree.children[i].attribute == 'Fail':
+                    commonClass, _ = self.evaluateCommonClass(data)
+                    subTree.children[i].attribute = commonClass
             else:
                 subData = self.getDataOnCondition(data, subTree.attribute, subTree.children[i].attributeValue)
                 evaluation = self.evaluate(subData, subTree.children[i])
@@ -28,9 +32,11 @@ class C45:
     def evaluate(self, data, node):
         commonClass, commonClassError = self.evaluateCommonClass(data)
         subTreeError = self.evaluateSubTree(data, node)
-        if commonClassError >= subTreeError:
+        if subTreeError >= commonClassError:
+            #print(f'commonClassError: {commonClassError}, subTreeError: {subTreeError}')
             node.isLeaf = True
             node.attribute = commonClass
+            node.children = []
 
             return node
 
@@ -59,7 +65,7 @@ class C45:
 
         classFreq = max(classes)
         error = sum(classes) - classFreq
-        commonClass = list(self.classes).index(classFreq)
+        commonClass = list(classes).index(classFreq)
 
         return commonClass, error
 
@@ -72,11 +78,10 @@ class C45:
 
         return output
 
-    def evaluateC45Tree(self):
+    def evaluateC45Tree(self, testData):
         e = 0
-        percent = 0
-        dataLen = len(self.data)
-        for data in self.data:
+        dataLen = len(testData)
+        for data in testData:
             curNode = self.tree
             while not curNode.isLeaf:
                 for child in curNode.children:
@@ -84,10 +89,10 @@ class C45:
                         curNode = child
                         break
 
-            percent += 1
-            #print(f'{percent*100/dataLen}%')
             if data[-1] != str(curNode.attribute):
                 e += 1
 
         error = e/dataLen
-        print(error)
+        print(f'C45: {error}')
+
+        return error

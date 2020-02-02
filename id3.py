@@ -4,12 +4,11 @@ from Node import Node
 from Data import Data
 
 class ID3:
-    def __init__(self, data):
-        self.data, self.test = data.split_to_train_test()
-        self.classes = [0, 1]
-        self.numAttributes = len(self.data[0])-1
-        self.attrValues = data.attrValues
-        self.attributes = list(range(self.numAttributes))
+    def __init__(self, data, attrValues, classes):
+        self.data = data
+        self.classes = classes
+        self.attrValues = attrValues
+        self.attributes = list(range(len(self.data[0]) - 1))
         self.tree = None
 
     def generateTree(self):
@@ -120,11 +119,10 @@ class ID3:
                 return False
         return data[0][-1]
 
-    def evaluate(self):
+    def evaluate(self, testData):
         e = 0
-        percent = 0
-        dataLen = len(self.test)
-        for data in self.test:
+        dataLen = len(testData)
+        for data in testData:
             curNode = self.tree
             while not curNode.isLeaf:
                 for child in curNode.children:
@@ -132,10 +130,11 @@ class ID3:
                         curNode = child
                         break
 
-            percent += 1
-            #print(f'{percent*100/dataLen}%')
             if data[-1] != str(curNode.attribute):
                 e += 1
 
         error = e/dataLen
-        print(error)
+        print(f'ID3: {error}')
+
+        return error
+
