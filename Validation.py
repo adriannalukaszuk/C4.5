@@ -16,4 +16,8 @@ class Validation:
         for i in range(self.k):
             if i != t:
                 train += data[i]
+                
         train1, train2 = train[0:int(len(train)/2)], train[int(len(train)/2):]
+
+        return train1, train2, test
+        
