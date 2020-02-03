@@ -93,19 +93,6 @@ class ID3:
         maxInd = freq.index(max(freq))
         return self.classes[maxInd]
 
-    def printTree(self):
-        self.printNode(self.tree)
-        
-    def printNode(self, node, indent=""):
-        if not node.isLeaf:
-			#discrete
-            for child in node.children:
-                if child.isLeaf:
-                    print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : " + str(child.attribute))
-                else:
-                    print(indent + str(node.attribute) + " = " + str(child.attributeValue) + " : ")
-                    self.printNode(child, indent + "	")
-
     @staticmethod
     def log(value):
         if(value == 0):

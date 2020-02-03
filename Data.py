@@ -11,6 +11,7 @@ class Data:
         self.classes = [0, 1]
 
     def fetchData(self):
+        self.data = []
         with open(self.path_to_data, 'r') as file:
             data = file.read().splitlines()
             for i in range(len(data)):
