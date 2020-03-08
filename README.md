@@ -11,8 +11,8 @@ Istnieją dwa rodzaje miejsc rozcięcia sekwencji kodującej białko: donory i a
 odnalezienie otwiera drogę do znalezienia eksonów, czyli sekwencji kodujących białka.
 Zatem istnieją 2 rozłączne zadania:
 
-1. rozróżnianie prawdziwych donorów od sekwencji je przypominających,
-2. rozróżnianie prawdziwych akceptorów od sekwencji je przypominających.
+- rozróżnianie prawdziwych donorów od sekwencji je przypominających,
+- rozróżnianie prawdziwych akceptorów od sekwencji je przypominających.
 
 Każdy z otrzymanych zbiorów danych należy rozdzielić na trenujący i testujący lub
 zastosować walidację krzyżową.
