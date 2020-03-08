@@ -6,6 +6,7 @@ https://en.wikipedia.org/wiki/C4.5_algorithm
 # Projekt zrealizowany w ramach przedmiotu Podstawy sztucznej inteligencji, EiTI PW
 
 1. Treść projektu
+
 Klasyfikacja sekwencji DNA. Użycie własnej implementacji algorytmu C4.5.
 Istnieją dwa rodzaje miejsc rozcięcia sekwencji kodującej białko: donory i akceptory. Ich
 odnalezienie otwiera drogę do znalezienia eksonów, czyli sekwencji kodujących białka.
@@ -26,6 +27,7 @@ oraz sam przykład czyli sekwencja DNA. Przykłady negatywne to takie, które cz
 wyglądają jak miejsca rozcięcia ale nimi nie są.
 
 2. Opis i analiza zbioru danych
+
 Dostarczone dane:
 • Ponad 5000-elementowy zbiór sekwencji DNA – 2 oddzielne zestawy danych dla
 problemu klasyfikacji donorów i akceptorów,
@@ -36,6 +38,7 @@ problemu klasyfikacji donorów i akceptorów,
 Do podziału danych na treningowe i testowe zastosowaliśmy k-krotną walidację krzyżową.
 
 3. Wnioski
+
 Algorytm C4.5 jest algorytmem zachłannym, dlatego słabo sobie radzi z danymi, w
 których znaczna część atrybutów jest nieistotna - w przypadku donorów intron to 8
 pozycji z 15, a w przypadku akceptorów, intron to aż 68 z 90 pozycji.
